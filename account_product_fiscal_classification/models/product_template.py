@@ -17,6 +17,7 @@ class ProductTemplate(models.Model):
     fiscal_classification_id = fields.Many2one(
         comodel_name='account.product.fiscal.classification',
         string='Fiscal Classification',
+        track_visibility="onchange",
         help="Specify the combination of taxes for this product."
         " This field is required. If you dont find the correct Fiscal"
         " Classification, Please create a new one or ask to your account"
@@ -106,9 +107,9 @@ class ProductTemplate(models.Model):
                 classification = template.fiscal_classification_id
                 tax_vals = {
                     'supplier_taxes_id': [[6, 0, [
-                        x.id for x in classification.purchase_tax_ids]]],
+                        x.id for x in classification.sudo().purchase_tax_ids]]],
                     'taxes_id': [[6, 0, [
-                        x.id for x in classification.sale_tax_ids]]],
+                        x.id for x in classification.sudo().sale_tax_ids]]],
                 }
                 super(ProductTemplate, template.sudo()).write(tax_vals)
             elif ('supplier_taxes_id' in vals.keys() or
